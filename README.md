@@ -6,7 +6,11 @@
 git clone https://github.com/MerelesLautaro/Equipo07-SportPulseMS.git
 ```
 
-## 2. Ejecutar con Docker
+## 2. Configurar la API Key de API-Sports en el archivo .env
+```bash
+https://dashboard.api-football.com/profile?access
+```
+## 3. Ejecutar con Docker
 ```bash
 docker-compose up --build
 ```
