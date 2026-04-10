@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+
+  ms-gateway:
+    build: ./ms-gateway
+    ports:
+      - "8080:8080"
+
+  ms-auth:
+    build: ./ms-auth
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-auth
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+
+  ms-leagues:
+    build: ./ms-leagues
+    ports:
+      - "8082:8082"
+
+  ms-teams:
+    build: ./ms-teams
+    ports:
+      - "8083:8083"
+
+  ms-fixtures:
+    build: ./ms-fixtures
+    ports:
+      - "8085:8085"
+
+  ms-standings:
+    build: ./ms-standings
+    ports:
+      - "8086:8086"
+
+  ms-notifications:
+    build: ./ms-notifications
+    ports:
+      - "8088:8088"
+    depends_on:
+      - postgres-notifications
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-notifications:5432/notifications_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+
+  ms-dashboard:
+    build: ./ms-dashboard
+    ports:
+      - "8089:8089"
+
+  postgres-auth:
+    image: postgres:15
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5433:5432"
+
+  postgres-notifications:
+    image: postgres:15
+    container_name: postgres-notifications
+    environment:
+      POSTGRES_DB: notifications_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5434:5432"
