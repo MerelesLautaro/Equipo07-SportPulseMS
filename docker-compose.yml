@@ -19,8 +19,8 @@ services:
     image: postgres:15
     environment:
       POSTGRES_DB: auth_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
 
@@ -32,10 +32,10 @@ services:
       - postgres-auth
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: admin123
-      JWT_SECRET: sportpulse-secret-key-2025
-      JWT_EXPIRATION: 3600000
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
 
   ms-leagues:
     build: ./ms-leagues
@@ -43,7 +43,7 @@ services:
       - "8082:8082"
     environment:
       RAPIDAPI_KEY: ${RAPIDAPI_KEY}
-      JWT_SECRET: sportpulse-secret-key-2025
+      JWT_SECRET: ${JWT_SECRET}
 
   ms-teams:
     build: ./ms-teams
@@ -51,7 +51,7 @@ services:
       - "8083:8083"
     environment:
       RAPIDAPI_KEY: ${RAPIDAPI_KEY}
-      JWT_SECRET: sportpulse-secret-key-2025
+      JWT_SECRET: ${JWT_SECRET}
 
   ms-fixtures:
     build: ./ms-fixtures
@@ -59,7 +59,7 @@ services:
       - "8085:8085"
     environment:
       RAPIDAPI_KEY: ${RAPIDAPI_KEY}
-      JWT_SECRET: sportpulse-secret-key-2025
+      JWT_SECRET: ${JWT_SECRET}
       TEAMS_SERVICE_URL: http://ms-teams:8083
 
   ms-standings:
@@ -68,15 +68,15 @@ services:
       - "8086:8086"
     environment:
       RAPIDAPI_KEY: ${RAPIDAPI_KEY}
-      JWT_SECRET: sportpulse-secret-key-2025
+      JWT_SECRET: ${JWT_SECRET}
       TEAMS_SERVICE_URL: http://ms-teams:8083
 
   postgres-notifications:
     image: postgres:15
     environment:
       POSTGRES_DB: notifications_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5434:5432"
 
@@ -89,9 +89,9 @@ services:
       - ms-fixtures
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-notifications:5432/notifications_db
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: admin123
-      JWT_SECRET: sportpulse-secret-key-2025
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       FIXTURES_SERVICE_URL: http://ms-fixtures:8085
 
   ms-dashboard:
@@ -103,7 +103,7 @@ services:
       - ms-standings
       - ms-leagues
     environment:
-      JWT_SECRET: sportpulse-secret-key-2025
+      JWT_SECRET: ${JWT_SECRET}
       FIXTURES_SERVICE_URL: http://ms-fixtures:8085
       STANDINGS_SERVICE_URL: http://ms-standings:8086
       LEAGUES_SERVICE_URL: http://ms-leagues:8082
