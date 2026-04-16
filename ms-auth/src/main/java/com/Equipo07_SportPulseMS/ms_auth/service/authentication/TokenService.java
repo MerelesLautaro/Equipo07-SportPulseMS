@@ -1,9 +1,10 @@
 package com.Equipo07_SportPulseMS.ms_auth.service.authentication;
 
+import com.Equipo07_SportPulseMS.ms_auth.entity.Role;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 public interface TokenService {
@@ -13,11 +14,11 @@ public interface TokenService {
 
     String generateToken(UserDetails userDetails);
 
-    String generateToken(Map<String, Object> extraClaims, UserDetails userDetails);
-
     long getExpirationTime();
 
-    boolean isTokenValid(String token, UserDetails userDetails);
+    UUID extractUserId(String token);
 
-    boolean isTokenExpired(String token);
+    Role extractRole(String token);
+
+    void validateToken(String token);
 }

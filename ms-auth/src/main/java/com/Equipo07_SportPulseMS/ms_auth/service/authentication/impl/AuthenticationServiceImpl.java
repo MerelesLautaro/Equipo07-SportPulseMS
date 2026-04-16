@@ -2,13 +2,12 @@ package com.Equipo07_SportPulseMS.ms_auth.service.authentication.impl;
 
 import com.Equipo07_SportPulseMS.ms_auth.dto.request.authentication.UserLoginRequest;
 import com.Equipo07_SportPulseMS.ms_auth.dto.request.authentication.UserRegisterRequest;
+import com.Equipo07_SportPulseMS.ms_auth.dto.response.authentication.TokenValidationResponse;
 import com.Equipo07_SportPulseMS.ms_auth.dto.response.authentication.UserDetailsResponse;
 import com.Equipo07_SportPulseMS.ms_auth.dto.response.authentication.UserLoginResponse;
 import com.Equipo07_SportPulseMS.ms_auth.entity.Role;
 import com.Equipo07_SportPulseMS.ms_auth.entity.User;
-import com.Equipo07_SportPulseMS.ms_auth.exception.EmailAlreadyExistsException;
-import com.Equipo07_SportPulseMS.ms_auth.exception.InvalidCredentialsException;
-import com.Equipo07_SportPulseMS.ms_auth.exception.UsernameAlreadyExistsException;
+import com.Equipo07_SportPulseMS.ms_auth.exception.*;
 import com.Equipo07_SportPulseMS.ms_auth.mapper.UserMapper;
 import com.Equipo07_SportPulseMS.ms_auth.repository.UserRepository;
 import com.Equipo07_SportPulseMS.ms_auth.security.userdetails.CustomUserDetails;
@@ -22,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +63,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException();
         }
+    }
+
+    @Override
+    public TokenValidationResponse validateToken(String token) {
+        tokenService.validateToken(token);
+
+        return buildValidTokenResponse(token);
+    }
+
+    private TokenValidationResponse buildValidTokenResponse(String token) {
+        UUID userId = tokenService.extractUserId(token);
+        String username = tokenService.extractUsername(token);
+        Role role = tokenService.extractRole(token);
+
+        return new TokenValidationResponse(
+                userId,
+                username,
+                role,
+                true
+        );
     }
 
     private Authentication authenticateUser(UserLoginRequest request) {
