@@ -15,7 +15,8 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         SimpleCacheManager manager = new SimpleCacheManager();
         manager.setCaches(List.of(
-                new ConcurrentMapCache("leaguesByFilters")
+                new ConcurrentMapCache("leaguesByFilters"),
+                new ConcurrentMapCache("leagueById")
         ));
         return manager;
     }
