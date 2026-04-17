@@ -1,0 +1,161 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+
+  cloud:
+    gateway:
+      routes:
+
+        # ================= AUTH =================
+        - id: ms-auth-validate
+          uri: ${AUTH_SERVICE_URL}
+          predicates:
+            - Path=/api/auth/validate
+          filters:
+            - name: InternalOnlyFilter
+            - name: CircuitBreaker
+              args:
+                name: authCircuitBreaker
+                fallbackUri: forward:/fallback/auth
+
+        - id: ms-auth
+          uri: ${AUTH_SERVICE_URL}
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authCircuitBreaker
+                fallbackUri: forward:/fallback/auth
+
+        # ================= LEAGUES =================
+        - id: ms-leagues
+          uri: ${LEAGUES_SERVICE_URL}
+          predicates:
+            - Path=/api/leagues/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: leaguesCircuitBreaker
+                fallbackUri: forward:/fallback/leagues
+
+        # ================= TEAMS =================
+        - id: ms-teams
+          uri: ${TEAMS_SERVICE_URL}
+          predicates:
+            - Path=/api/teams/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: teamsCircuitBreaker
+                fallbackUri: forward:/fallback/teams
+
+        # ================= FIXTURES =================
+        - id: ms-fixtures
+          uri: ${FIXTURES_SERVICE_URL}
+          predicates:
+            - Path=/api/fixtures/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fixturesCircuitBreaker
+                fallbackUri: forward:/fallback/fixtures
+
+        # ================= STANDINGS =================
+        - id: ms-standings
+          uri: ${STANDINGS_SERVICE_URL}
+          predicates:
+            - Path=/api/standings/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: standingsCircuitBreaker
+                fallbackUri: forward:/fallback/standings
+
+        # ================= NOTIFICATIONS =================
+        - id: ms-notifications
+          uri: ${NOTIFICATIONS_SERVICE_URL}
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationsCircuitBreaker
+                fallbackUri: forward:/fallback/notifications
+
+        # ================= DASHBOARD =================
+        - id: ms-dashboard
+          uri: ${DASHBOARD_SERVICE_URL}
+          predicates:
+            - Path=/api/dashboard/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: dashboardCircuitBreaker
+                fallbackUri: forward:/fallback/dashboard
+
+# ================= RESILIENCE4J =================
+resilience4j:
+  circuitbreaker:
+    instances:
+      authCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      leaguesCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      teamsCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      fixturesCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      standingsCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      notificationsCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      dashboardCircuitBreaker:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+  timelimiter:
+    instances:
+      authCircuitBreaker:
+        timeoutDuration: 3s
+      leaguesCircuitBreaker:
+        timeoutDuration: 3s
+      teamsCircuitBreaker:
+        timeoutDuration: 3s
+      fixturesCircuitBreaker:
+        timeoutDuration: 3s
+      standingsCircuitBreaker:
+        timeoutDuration: 3s
+      notificationsCircuitBreaker:
+        timeoutDuration: 3s
+      dashboardCircuitBreaker:
+        timeoutDuration: 3s
