@@ -21,4 +21,6 @@ public interface TokenService {
     Role extractRole(String token);
 
     void validateToken(String token);
+
+    boolean isTokenValid(String token, UserDetails userDetails);
 }

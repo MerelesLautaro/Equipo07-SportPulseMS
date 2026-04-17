@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -16,17 +17,24 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityFilterChainConfig {
 
     private final DaoAuthenticationProvider authenticationProvider;
+    private final InternalAuthFilter internalAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagementCustomizer ->
-                        sessionManagementCustomizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/actuator/health"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(internalAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
