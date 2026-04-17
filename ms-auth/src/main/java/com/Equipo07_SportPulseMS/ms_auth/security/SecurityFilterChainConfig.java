@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityFilterChainConfig {
 
     private final DaoAuthenticationProvider authenticationProvider;
-    private final JwtAuthFilter jwtAuthFilter;
     private final InternalAuthFilter internalAuthFilter;
 
     @Bean
@@ -30,16 +29,10 @@ public class SecurityFilterChainConfig {
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/register",
-                                "/api/auth/login"
+                                "/api/auth/**"
                         ).permitAll()
-
-                        // validate NO es público
-                        .requestMatchers("/api/auth/validate").authenticated()
-
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(internalAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
