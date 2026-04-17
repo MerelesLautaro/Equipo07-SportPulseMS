@@ -1,5 +1,8 @@
 package com.Equipo07_SportPulseMS.ms_auth.service.authentication.impl;
 
+import com.Equipo07_SportPulseMS.ms_auth.entity.Role;
+import com.Equipo07_SportPulseMS.ms_auth.exception.InvalidTokenException;
+import com.Equipo07_SportPulseMS.ms_auth.exception.TokenExpiredException;
 import com.Equipo07_SportPulseMS.ms_auth.security.userdetails.CustomUserDetails;
 import com.Equipo07_SportPulseMS.ms_auth.service.authentication.TokenService;
 import io.jsonwebtoken.Claims;
@@ -15,6 +18,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -39,11 +43,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, expiration);
-    }
-
-    @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -60,18 +59,30 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public UUID extractUserId(String token) {
+        try {
+            String userId = extractClaim(token, claims -> claims.get("userId", String.class));
+            return UUID.fromString(userId);
+        } catch (Exception e) {
+            throw new InvalidTokenException();
+        }
     }
 
     @Override
-    public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public Role extractRole(String token) {
+        String role = extractClaim(token, claims -> claims.get("role", String.class));
+        return Role.valueOf(role);
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    @Override
+    public void validateToken(String token) {
+        try {
+            extractAllClaims(token);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            throw new TokenExpiredException();
+        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
+            throw new InvalidTokenException();
+        }
     }
 
     private Claims extractAllClaims(String token) {
