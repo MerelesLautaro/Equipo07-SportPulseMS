@@ -1,0 +1,35 @@
+package com.Equipo07_SportPulseMS.ms_teams.util.mapper;
+
+import com.Equipo07_SportPulseMS.ms_teams.dto.StadiumResponse;
+import com.Equipo07_SportPulseMS.ms_teams.dto.TeamItem;
+import com.Equipo07_SportPulseMS.ms_teams.dto.TeamResponse;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TeamMapper {
+
+    /**
+     * el argumento isNational en createTeamResponse se deja nulo para que Jackson no serialize este valor
+     * en el endpoint GET /api/teams. Leer el comentario en TeamResponse
+     */
+    public TeamResponse toTeamResponseWithoutNational(TeamItem teamItem) {
+        return this.createTeamResponse(teamItem, null);
+    }
+
+    public TeamResponse toTeamResponse(TeamItem teamItem) {
+        return this.createTeamResponse(teamItem, teamItem.team().national());
+    }
+
+    private TeamResponse createTeamResponse(TeamItem teamItem, Boolean isNational) {
+        var stadium = new StadiumResponse(teamItem.venue().name(), teamItem.venue().city(), teamItem.venue().capacity());
+        return new TeamResponse(
+                teamItem.team().id(),
+                teamItem.team().name(),
+                teamItem.team().country(),
+                teamItem.team().logo(),
+                teamItem.team().founded(),
+                isNational,
+                stadium
+        );
+    }
+}
