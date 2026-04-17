@@ -10,152 +10,150 @@ spring:
       routes:
 
         # ================= AUTH =================
-        - id: ms-auth-validate
-          uri: ${AUTH_SERVICE_URL}
-          predicates:
-            - Path=/api/auth/validate
-          filters:
-            - name: InternalOnlyFilter
-            - name: CircuitBreaker
-              args:
-                name: authCircuitBreaker
-                fallbackUri: forward:/fallback/auth
-
-        - id: ms-auth
+        - id: auth
           uri: ${AUTH_SERVICE_URL}
           predicates:
             - Path=/api/auth/**
           filters:
             - name: CircuitBreaker
               args:
-                name: authCircuitBreaker
+                name: auth
                 fallbackUri: forward:/fallback/auth
 
         # ================= LEAGUES =================
-        - id: ms-leagues
+        - id: leagues
           uri: ${LEAGUES_SERVICE_URL}
           predicates:
             - Path=/api/leagues/**
           filters:
             - name: CircuitBreaker
               args:
-                name: leaguesCircuitBreaker
+                name: leagues
                 fallbackUri: forward:/fallback/leagues
 
         # ================= TEAMS =================
-        - id: ms-teams
+        - id: teams
           uri: ${TEAMS_SERVICE_URL}
           predicates:
             - Path=/api/teams/**
           filters:
             - name: CircuitBreaker
               args:
-                name: teamsCircuitBreaker
+                name: teams
                 fallbackUri: forward:/fallback/teams
 
         # ================= FIXTURES =================
-        - id: ms-fixtures
+        - id: fixtures
           uri: ${FIXTURES_SERVICE_URL}
           predicates:
             - Path=/api/fixtures/**
           filters:
             - name: CircuitBreaker
               args:
-                name: fixturesCircuitBreaker
+                name: fixtures
                 fallbackUri: forward:/fallback/fixtures
 
         # ================= STANDINGS =================
-        - id: ms-standings
+        - id: standings
           uri: ${STANDINGS_SERVICE_URL}
           predicates:
             - Path=/api/standings/**
           filters:
             - name: CircuitBreaker
               args:
-                name: standingsCircuitBreaker
+                name: standings
                 fallbackUri: forward:/fallback/standings
 
         # ================= NOTIFICATIONS =================
-        - id: ms-notifications
+        - id: notifications
           uri: ${NOTIFICATIONS_SERVICE_URL}
           predicates:
             - Path=/api/notifications/**
           filters:
             - name: CircuitBreaker
               args:
-                name: notificationsCircuitBreaker
+                name: notifications
                 fallbackUri: forward:/fallback/notifications
 
         # ================= DASHBOARD =================
-        - id: ms-dashboard
+        - id: dashboard
           uri: ${DASHBOARD_SERVICE_URL}
           predicates:
             - Path=/api/dashboard/**
           filters:
             - name: CircuitBreaker
               args:
-                name: dashboardCircuitBreaker
+                name: dashboard
                 fallbackUri: forward:/fallback/dashboard
+
+services:
+  auth: ${AUTH_SERVICE_URL}
+  leagues: ${LEAGUES_SERVICE_URL}
+  teams: ${TEAMS_SERVICE_URL}
+  fixtures: ${FIXTURES_SERVICE_URL}
+  standings: ${STANDINGS_SERVICE_URL}
+  notifications: ${NOTIFICATIONS_SERVICE_URL}
+  dashboard: ${DASHBOARD_SERVICE_URL}
 
 # ================= RESILIENCE4J =================
 resilience4j:
+
   circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
     instances:
-      authCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-      leaguesCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-      teamsCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-      fixturesCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-      standingsCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-      notificationsCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-
-      dashboardCircuitBreaker:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
+      auth:
+        baseConfig: default
+      leagues:
+        baseConfig: default
+      teams:
+        baseConfig: default
+      fixtures:
+        baseConfig: default
+      standings:
+        baseConfig: default
+      notifications:
+        baseConfig: default
+      dashboard:
+        baseConfig: default
 
   timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+
     instances:
-      authCircuitBreaker:
-        timeoutDuration: 3s
-      leaguesCircuitBreaker:
-        timeoutDuration: 3s
-      teamsCircuitBreaker:
-        timeoutDuration: 3s
-      fixturesCircuitBreaker:
-        timeoutDuration: 3s
-      standingsCircuitBreaker:
-        timeoutDuration: 3s
-      notificationsCircuitBreaker:
-        timeoutDuration: 3s
-      dashboardCircuitBreaker:
-        timeoutDuration: 3s
+      auth:
+        baseConfig: default
+      leagues:
+        baseConfig: default
+      teams:
+        baseConfig: default
+      fixtures:
+        baseConfig: default
+      standings:
+        baseConfig: default
+      notifications:
+        baseConfig: default
+      dashboard:
+        baseConfig: default
+
+# ================= ACTUATOR =================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
