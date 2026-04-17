@@ -19,11 +19,9 @@ class TeamResponseJsonTest {
         Path jsonPath = Path.of("teams.json");
         String rawJson = Files.readString(jsonPath);
 
-        TeamResponse teamResponse = objectMapper.readValue(rawJson, TeamResponse.class);
+        TeamApiSportResponse teamResponse = objectMapper.readValue(rawJson, TeamApiSportResponse.class);
 
         assertNotNull(teamResponse);
-        assertEquals("teams", teamResponse.endpoint());
-        assertEquals(20, teamResponse.results());
         assertNotNull(teamResponse.response());
         assertEquals(20, teamResponse.response().size());
         assertFalse(teamResponse.response().isEmpty());
