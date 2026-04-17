@@ -1,17 +1,28 @@
 package com.Equipo07_SportPulseMS.ms_teams.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import java.util.List;
-
+@Getter
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record TeamResponse(
-        @JsonProperty("get") String endpoint,
-        Parameters parameters,
-        List<String> errors,
-        int results,
-        Paging paging,
-        List<TeamItem> response
-){
+public final class TeamResponse {
+
+    private Integer id;
+    private String name;
+    private String country;
+    private String logo;
+    private Integer founded;
+
+    /**
+     * Este campo es opcional únicamente para respuesta en el endpoint de teams
+     * de recuperación por ligas y temporada, esto se hace para no aumentar la complejidad
+     * con @JsonView en todos los campos o crear una segunda clase
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean national;
+
+    private StadiumResponse stadium;
 }
