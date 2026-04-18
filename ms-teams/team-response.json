@@ -1,0 +1,26 @@
+[
+  {
+    "id": 529,
+    "name": "FC Barcelona",
+    "country": "Spain",
+    "logo": "https://media.api-sports.io/football/teams/529.png",
+    "founded": 1899,
+    "stadium": {
+      "name": "Camp Nou",
+      "city": "Barcelona",
+      "capacity": 99354
+    }
+  },
+  {
+    "id": 541,
+    "name": "Real Madrid",
+    "country": "Spain",
+    "logo": "https://media.api-sports.io/football/teams/541.png",
+    "founded": 1902,
+    "stadium": {
+      "name": "Estadio Santiago Bernabéu",
+      "city": "Madrid",
+      "capacity": 81044
+    }
+  }
+]

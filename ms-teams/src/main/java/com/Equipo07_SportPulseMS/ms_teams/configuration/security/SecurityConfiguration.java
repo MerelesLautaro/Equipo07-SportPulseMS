@@ -1,5 +1,8 @@
 package com.Equipo07_SportPulseMS.ms_teams.configuration.security;
 
+import com.Equipo07_SportPulseMS.ms_teams.configuration.security.filter.InternalAuthenticationFilter;
+import com.Equipo07_SportPulseMS.ms_teams.configuration.security.filter.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -8,10 +11,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final InternalAuthenticationFilter internalAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
@@ -20,10 +28,12 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
-                    // TODO: agregar solicitud de autenticación con el servicio de ms-auth
-                    http.requestMatchers(HttpMethod.GET, "/api/teams/**").permitAll();
+                    http.requestMatchers(HttpMethod.GET, "/api/teams/**").authenticated();
+                    http.requestMatchers("/actuator/health").permitAll();
                     http.anyRequest().denyAll();
                 })
+                .addFilterBefore(internalAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
