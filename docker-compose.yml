@@ -14,6 +14,10 @@ services:
       STANDINGS_SERVICE_URL: http://ms-standings:8086
       NOTIFICATIONS_SERVICE_URL: http://ms-notifications:8088
       DASHBOARD_SERVICE_URL: http://ms-dashboard:8089
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - redis
 
   postgres-auth:
     image: postgres:15
@@ -100,3 +104,11 @@ services:
       FIXTURES_SERVICE_URL: http://ms-fixtures:8085
       STANDINGS_SERVICE_URL: http://ms-standings:8086
       LEAGUES_SERVICE_URL: http://ms-leagues:8082
+
+  redis:
+    image: redis:7
+    container_name: ms-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    restart: unless-stopped

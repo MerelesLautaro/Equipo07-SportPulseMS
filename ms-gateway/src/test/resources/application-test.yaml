@@ -1,14 +1,9 @@
 server:
-  port: 8080
+  port: 0
 
 spring:
   application:
-    name: ms-gateway
-
-  data:
-    redis:
-      host: ${SPRING_DATA_REDIS_HOST:localhost}
-      port: ${SPRING_DATA_REDIS_PORT:6379}
+    name: ms-gateway-test
 
   cloud:
     gateway:
@@ -93,6 +88,7 @@ spring:
                     name: dashboard
                     fallbackUri: forward:/fallback/dashboard
 
+# ================= SERVICES =================
 services:
   auth: ${AUTH_SERVICE_URL}
   leagues: ${LEAGUES_SERVICE_URL}
@@ -108,10 +104,10 @@ resilience4j:
   circuitbreaker:
     configs:
       default:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
+        slidingWindowSize: 2
+        minimumNumberOfCalls: 1
         failureRateThreshold: 50
-        waitDurationInOpenState: 10s
+        waitDurationInOpenState: 5s
 
     instances:
       auth:
@@ -132,7 +128,7 @@ resilience4j:
   timelimiter:
     configs:
       default:
-        timeoutDuration: 3s
+        timeoutDuration: 2s
 
     instances:
       auth:
@@ -150,17 +146,10 @@ resilience4j:
       dashboard:
         baseConfig: default
 
-# ================= ACTUATOR =================
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-
-  endpoint:
-    health:
-      show-details: always
-
-  metrics:
-    tags:
-      application: ${spring.application.name}
+# ================= LOGGING =================
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty.http.client: DEBUG
+    org.springframework.web.reactive: DEBUG
+    com.Equipo07_SportPulseMS.ms_gateway: DEBUG
