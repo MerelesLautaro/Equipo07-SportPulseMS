@@ -1,0 +1,9 @@
+### GET request to example server
+GET https://v3.football.api-sports.io/teams?league=39&season=2023
+x-apisports-key: 10db13e48fa15dc83cd167da78802452
+
+### GET requets teams with id
+GET https://v3.football.api-sports.io/teams?id=0
+x-apisports-key: 10db13e48fa15dc83cd167da78802452
+
+
