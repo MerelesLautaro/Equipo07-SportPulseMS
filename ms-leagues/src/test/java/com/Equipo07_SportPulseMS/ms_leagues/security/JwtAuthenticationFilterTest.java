@@ -1,29 +1,33 @@
 package com.Equipo07_SportPulseMS.ms_leagues.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterTest {
 
-    private static final String SECRET = "default-jwt-secret-key-default-jwt-secret-key-12345";
+    @Mock
+    private AuthValidationService authValidationService;
+
+    @InjectMocks
+    private JwtAuthenticationFilter filter;
 
     @Test
     void missingBearerTokenReturnsUnauthorized() throws ServletException, IOException {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(new JwtService(SECRET));
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/leagues");
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
@@ -35,34 +39,17 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void validBearerTokenAllowsRequest() throws ServletException, IOException {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(new JwtService(SECRET));
+        when(authValidationService.validate(eq("Bearer valid-token")))
+                .thenReturn(new TokenValidationResponse(true, "550e8400-e29b-41d4-a716-446655440000", "test-user", "USER"));
+
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/leagues");
-        request.addHeader("Authorization", "Bearer " + buildToken());
+        request.addHeader("Authorization", "Bearer valid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
 
         filter.doFilter(request, response, chain);
 
         assertEquals(200, response.getStatus());
-    }
-
-    private String buildToken() {
-        return Jwts.builder()
-                .subject("user-1")
-                .claim("username", "test-user")
-                .claim("role", "USER")
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 60_000))
-                .signWith(Keys.hmacShaKeyFor(deriveKey(SECRET)), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    private byte[] deriveKey(String secret) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            return digest.digest(secret.getBytes(StandardCharsets.UTF_8));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
+        verify(authValidationService).validate("Bearer valid-token");
     }
 }
