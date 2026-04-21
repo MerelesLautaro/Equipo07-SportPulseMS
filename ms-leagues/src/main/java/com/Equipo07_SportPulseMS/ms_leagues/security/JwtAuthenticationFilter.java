@@ -1,7 +1,5 @@
 package com.Equipo07_SportPulseMS.ms_leagues.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,10 +19,10 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final AuthValidationService authValidationService;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
+    public JwtAuthenticationFilter(AuthValidationService authValidationService) {
+        this.authValidationService = authValidationService;
     }
 
     @Override
@@ -42,11 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authorization.substring(7);
         try {
-            Claims claims = jwtService.parseClaims(token);
-            String username = claims.get("username", String.class);
-            String role = claims.get("role", String.class);
+            TokenValidationResponse validation = authValidationService.validate(authorization);
+            String username = validation.username();
+            String role = validation.role();
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     username != null ? username : "authenticated-user",
@@ -55,13 +52,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
-        } catch (JwtException | IllegalArgumentException ex) {
+        } catch (InvalidTokenException ex) {
             unauthorized(response, "INVALID_TOKEN", "Token JWT inválido o expirado");
+        } catch (AuthServiceUnavailableException ex) {
+            serviceUnavailable(response, "AUTH_SERVICE_UNAVAILABLE", "No se pudo validar el token con ms-auth");
         }
     }
 
     private void unauthorized(HttpServletResponse response, String error, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(
+                "{\"error\":\"" + error + "\",\"message\":\"" + message + "\",\"timestamp\":\"" + Instant.now() + "\"}"
+        );
+    }
+
+    private void serviceUnavailable(HttpServletResponse response, String error, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(
                 "{\"error\":\"" + error + "\",\"message\":\"" + message + "\",\"timestamp\":\"" + Instant.now() + "\"}"
