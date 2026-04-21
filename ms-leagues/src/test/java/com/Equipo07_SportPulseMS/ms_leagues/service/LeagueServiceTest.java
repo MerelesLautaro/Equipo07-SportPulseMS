@@ -3,7 +3,9 @@ package com.Equipo07_SportPulseMS.ms_leagues.service;
 import com.Equipo07_SportPulseMS.ms_leagues.client.ApiSportsLeaguesClient;
 import com.Equipo07_SportPulseMS.ms_leagues.client.dto.ApiSportsLeagueItem;
 import com.Equipo07_SportPulseMS.ms_leagues.client.dto.ApiSportsLeaguesEnvelope;
+import com.Equipo07_SportPulseMS.ms_leagues.dto.LeagueDetailResponse;
 import com.Equipo07_SportPulseMS.ms_leagues.dto.LeagueSummaryResponse;
+import com.Equipo07_SportPulseMS.ms_leagues.exception.LeagueNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,5 +80,40 @@ class LeagueServiceTest {
 
         verify(apiSportsLeaguesClient).getLeagues(null, null, null);
         assertEquals(0, result.size());
+    }
+
+    @Test
+    void getLeagueByIdReturnsDetailedPayload() {
+        ApiSportsLeagueItem item = new ApiSportsLeagueItem(
+                new ApiSportsLeagueItem.League(140, "La Liga", "League", "logo-url"),
+                new ApiSportsLeagueItem.Country("Spain"),
+                List.of(
+                        new ApiSportsLeagueItem.Season(2021, "2021-08-13", "2022-05-22", false),
+                        new ApiSportsLeagueItem.Season(2022, "2022-08-12", "2023-06-04", false),
+                        new ApiSportsLeagueItem.Season(2023, "2023-08-11", "2024-05-26", false),
+                        new ApiSportsLeagueItem.Season(2024, "2024-08-17", "2025-05-25", true)
+                )
+        );
+        when(apiSportsLeaguesClient.getLeagues(140, null, null))
+                .thenReturn(new ApiSportsLeaguesEnvelope(List.of(item)));
+
+        LeagueDetailResponse result = leagueService.getLeagueById(140);
+
+        verify(apiSportsLeaguesClient).getLeagues(140, null, null);
+        assertEquals(140, result.id());
+        assertEquals("La Liga", result.name());
+        assertEquals(List.of(2021, 2022, 2023, 2024), result.seasons());
+        assertEquals(2024, result.currentSeason().year());
+        assertEquals("2024-08-17", result.currentSeason().startDate());
+        assertEquals("2025-05-25", result.currentSeason().endDate());
+        assertEquals(true, result.currentSeason().current());
+    }
+
+    @Test
+    void getLeagueByIdThrowsNotFoundWhenEmptyResponse() {
+        when(apiSportsLeaguesClient.getLeagues(999, null, null))
+                .thenReturn(new ApiSportsLeaguesEnvelope(List.of()));
+
+        assertThrows(LeagueNotFoundException.class, () -> leagueService.getLeagueById(999));
     }
 }
