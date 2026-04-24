@@ -34,4 +34,12 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
         WHERE s.status = :status
     """)
     List<Subscription> findActive(SubscriptionStatus status);
+
+    @Query("""
+        SELECT DISTINCT s FROM Subscription s
+        LEFT JOIN FETCH s.events
+        WHERE s.userId = :userId
+        AND s.status = :status
+    """)
+    List<Subscription> findByUserIdAndStatus(UUID userId, SubscriptionStatus status);
 }

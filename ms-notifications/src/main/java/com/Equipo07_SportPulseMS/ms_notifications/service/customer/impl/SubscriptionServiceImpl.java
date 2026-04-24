@@ -2,6 +2,7 @@ package com.Equipo07_SportPulseMS.ms_notifications.service.customer.impl;
 
 import com.Equipo07_SportPulseMS.ms_notifications.dto.request.notification.CreateSubscriptionRequest;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionCreateResponse;
+import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.NotificationChannel;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.Subscription;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.SubscriptionStatus;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,7 +38,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = buildSubscription(request, userId);
         Subscription saved = subscriptionRepository.save(subscription);
 
-        return mapToResponse(saved);
+        return mapToCreateResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SubscriptionResponse> getSubscriptionsByUserLogged() {
+
+        UUID userId = SecurityUtils.getCurrentUserId();
+
+        List<Subscription> subscriptions = subscriptionRepository
+                .findByUserIdAndStatus(userId, SubscriptionStatus.ACTIVE);
+
+        return subscriptions.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     private void validateRequestStructure(CreateSubscriptionRequest request) {
@@ -129,7 +145,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .build();
     }
 
-    private SubscriptionCreateResponse mapToResponse(Subscription saved) {
+    private SubscriptionCreateResponse mapToCreateResponse(Subscription saved) {
         return new SubscriptionCreateResponse(
                 saved.getId(),
                 saved.getUserId(),
@@ -140,6 +156,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 saved.getChannel(),
                 saved.getStatus(),
                 saved.getCreatedAt()
+        );
+    }
+
+    private SubscriptionResponse mapToResponse(Subscription s) {
+        return new SubscriptionResponse(
+                s.getId(),
+                s.getType(),
+                s.getTeamId(),
+                s.getFixtureId(),
+                s.getEvents(),
+                s.getChannel(),
+                s.getWebhookUrl(),
+                s.getStatus()
         );
     }
 }

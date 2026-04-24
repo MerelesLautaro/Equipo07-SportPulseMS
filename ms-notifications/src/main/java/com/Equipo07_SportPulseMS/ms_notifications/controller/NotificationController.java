@@ -2,15 +2,15 @@ package com.Equipo07_SportPulseMS.ms_notifications.controller;
 
 import com.Equipo07_SportPulseMS.ms_notifications.dto.request.notification.CreateSubscriptionRequest;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionCreateResponse;
+import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.service.customer.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +27,10 @@ public class NotificationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @GetMapping("/subscriptions")
+    public ResponseEntity<List<SubscriptionResponse>> getSubscriptions() {
+        return ResponseEntity.ok(subscriptionService.getSubscriptionsByUserLogged());
     }
 }
