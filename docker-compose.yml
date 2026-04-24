@@ -84,13 +84,16 @@ services:
     depends_on:
       - postgres-notifications
       - ms-fixtures
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-notifications:5432/notifications_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       INTERNAL_SECRET: ${INTERNAL_SECRET}
-      FIXTURES_SERVICE_URL: http://ms-fixtures:8085
+      FIXTURES_SERVICE_URL: http://ms-notifications:8088
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
 
   ms-dashboard:
     build: ./ms-dashboard
