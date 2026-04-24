@@ -1,10 +1,12 @@
 package com.Equipo07_SportPulseMS.ms_standings.controller;
 
 import com.Equipo07_SportPulseMS.ms_standings.dto.StandingsResponse;
+import com.Equipo07_SportPulseMS.ms_standings.dto.TeamStandingResponse;
 import com.Equipo07_SportPulseMS.ms_standings.service.StandingsService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,5 +28,14 @@ public class StandingsController {
             @RequestParam @NotNull Integer season
     ) {
         return standingsService.getStandings(league, season);
+    }
+
+    @GetMapping("/team/{teamId}")
+    public TeamStandingResponse getTeamStanding(
+            @PathVariable @NotNull Integer teamId,
+            @RequestParam @NotNull Integer league,
+            @RequestParam @NotNull Integer season
+    ) {
+        return standingsService.getTeamStanding(teamId, league, season);
     }
 }
