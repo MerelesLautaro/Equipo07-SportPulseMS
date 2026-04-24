@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
@@ -42,4 +43,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
         AND s.status = :status
     """)
     List<Subscription> findByUserIdAndStatus(UUID userId, SubscriptionStatus status);
+
+    Optional<Subscription> findByIdAndUserId(UUID id, UUID userId);
 }

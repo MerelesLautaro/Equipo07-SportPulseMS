@@ -1,15 +1,14 @@
 package com.Equipo07_SportPulseMS.ms_notifications.service.customer.impl;
 
 import com.Equipo07_SportPulseMS.ms_notifications.dto.request.notification.CreateSubscriptionRequest;
+import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionCancelResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionCreateResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.notification.SubscriptionResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.NotificationChannel;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.Subscription;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.SubscriptionStatus;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.SubscriptionType;
-import com.Equipo07_SportPulseMS.ms_notifications.exception.FixtureSubscriptionDuplicatedException;
-import com.Equipo07_SportPulseMS.ms_notifications.exception.InvalidSubscriptionRequestException;
-import com.Equipo07_SportPulseMS.ms_notifications.exception.TeamSubscriptionDuplicatedException;
+import com.Equipo07_SportPulseMS.ms_notifications.exception.*;
 import com.Equipo07_SportPulseMS.ms_notifications.repository.SubscriptionRepository;
 import com.Equipo07_SportPulseMS.ms_notifications.service.customer.SubscriptionService;
 import com.Equipo07_SportPulseMS.ms_notifications.util.SecurityUtils;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +53,44 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptions.stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public SubscriptionCancelResponse cancelSubscription(UUID subscriptionId) {
+
+        UUID userId = SecurityUtils.getCurrentUserId();
+
+        Subscription subscription = subscriptionRepository
+                .findById(subscriptionId)
+                .orElseThrow(SubscriptionNotFoundException::new);
+
+        validateSubscriptionForDelete(subscription, userId);
+
+        subscription.setStatus(SubscriptionStatus.CANCELLED);
+
+        subscriptionRepository.save(subscription);
+
+        return mapToCancelResponse(subscription);
+    }
+
+    private void validateSubscriptionForDelete(Subscription subscription, UUID userId) {
+
+        if (!subscription.getUserId().equals(userId)) {
+            throw new AccessDeniedException();
+        }
+
+        if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
+            throw new SubscriptionNotFoundException();
+        }
+    }
+
+    private SubscriptionCancelResponse mapToCancelResponse(Subscription subscription) {
+        return new SubscriptionCancelResponse(
+                subscription.getId(),
+                subscription.getStatus(),
+                Instant.now()
+        );
     }
 
     private void validateRequestStructure(CreateSubscriptionRequest request) {
