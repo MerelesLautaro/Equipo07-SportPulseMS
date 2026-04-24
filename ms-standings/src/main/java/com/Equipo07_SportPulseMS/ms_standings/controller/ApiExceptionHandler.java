@@ -1,6 +1,7 @@
 package com.Equipo07_SportPulseMS.ms_standings.controller;
 
 import com.Equipo07_SportPulseMS.ms_standings.exception.StandingsNotFoundException;
+import com.Equipo07_SportPulseMS.ms_standings.exception.TeamStandingNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -18,6 +19,16 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of(
                         "error", "STANDINGS_NOT_FOUND",
+                        "message", ex.getMessage(),
+                        "timestamp", Instant.now().toString()
+                ));
+    }
+
+    @ExceptionHandler(TeamStandingNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleTeamStandingNotFound(TeamStandingNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "error", "TEAM_STANDING_NOT_FOUND",
                         "message", ex.getMessage(),
                         "timestamp", Instant.now().toString()
                 ));
