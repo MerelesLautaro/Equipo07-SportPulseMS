@@ -73,6 +73,7 @@ class StandingsServiceTest {
         assertEquals(48, result.points());
         assertEquals(20, result.played());
         assertEquals("WWWDW", result.form());
+        assertEquals("Promotion - Champions League (Group Stage)", result.description());
     }
 
     @Test
@@ -110,7 +111,8 @@ class StandingsServiceTest {
                         new ApiSportsStandingsEnvelope.ApiSportsStandingRow.Goals(44, 20)
                 ),
                 24,
-                "WDWWW"
+                "WDWWW",
+                "Promotion - Champions League (Group Stage)"
         );
 
         ApiSportsStandingsEnvelope.ApiSportsStandingRow second = new ApiSportsStandingsEnvelope.ApiSportsStandingRow(
@@ -125,7 +127,8 @@ class StandingsServiceTest {
                         new ApiSportsStandingsEnvelope.ApiSportsStandingRow.Goals(52, 18)
                 ),
                 34,
-                "WWWDW"
+                "WWWDW",
+                "Promotion - Champions League (Group Stage)"
         );
 
         return new ApiSportsStandingsEnvelope(
@@ -156,7 +159,8 @@ class StandingsServiceTest {
                         new ApiSportsStandingsEnvelope.ApiSportsStandingRow.Goals(52, 18)
                 ),
                 34,
-                "WWWDW"
+                "WWWDW",
+                "Promotion - Champions League (Group Stage)"
         );
 
         return new ApiSportsStandingsEnvelope(

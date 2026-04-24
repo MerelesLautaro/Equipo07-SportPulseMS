@@ -28,7 +28,8 @@ public record ApiSportsStandingsEnvelope(
             Integer points,
             All all,
             @JsonProperty("goalsDiff") Integer goalsDiff,
-            String form
+            String form,
+            String description
     ) {
         public record Team(
                 Integer id,

@@ -6,8 +6,10 @@ import com.Equipo07_SportPulseMS.ms_standings.client.dto.ApiSportsStandingsEnvel
 import com.Equipo07_SportPulseMS.ms_standings.client.dto.TeamDetailResponse;
 import com.Equipo07_SportPulseMS.ms_standings.dto.StandingEntryResponse;
 import com.Equipo07_SportPulseMS.ms_standings.dto.StandingsResponse;
+import com.Equipo07_SportPulseMS.ms_standings.dto.TeamStandingResponse;
 import com.Equipo07_SportPulseMS.ms_standings.dto.TeamSummaryResponse;
 import com.Equipo07_SportPulseMS.ms_standings.exception.StandingsNotFoundException;
+import com.Equipo07_SportPulseMS.ms_standings.exception.TeamStandingNotFoundException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,46 @@ public class StandingsService {
         );
 
         return new StandingsResponse(leagueInfo, entries);
+    }
+
+    public TeamStandingResponse getTeamStanding(Integer teamId, Integer league, Integer season) {
+        StandingsResponse standings = getStandings(league, season);
+
+        StandingEntryResponse entry = standings.standings().stream()
+                .filter(item -> item.team() != null && teamId.equals(item.team().id()))
+                .findFirst()
+                .orElseThrow(() -> new TeamStandingNotFoundException("El equipo no participa en la liga o temporada proporcionada"));
+
+        ApiSportsStandingsEnvelope envelope = standingsClient.getStandings(league, season);
+        String description = extractDescriptionByTeam(envelope, teamId);
+
+        return new TeamStandingResponse(
+                entry.team(),
+                standings.league(),
+                season,
+                entry.rank(),
+                entry.points(),
+                entry.played(),
+                entry.form(),
+                description
+        );
+    }
+
+    private String extractDescriptionByTeam(ApiSportsStandingsEnvelope envelope, Integer teamId) {
+        if (envelope == null || envelope.response() == null || envelope.response().isEmpty()) {
+            return null;
+        }
+
+        ApiSportsStandingsEnvelope.ApiSportsStandingLeague leagueData = envelope.response().get(0).league();
+        if (leagueData == null || leagueData.standings() == null || leagueData.standings().isEmpty()) {
+            return null;
+        }
+
+        return leagueData.standings().get(0).stream()
+                .filter(row -> row.team() != null && teamId.equals(row.team().id()))
+                .map(ApiSportsStandingsEnvelope.ApiSportsStandingRow::description)
+                .findFirst()
+                .orElse(null);
     }
 
     private StandingEntryResponse toEntry(ApiSportsStandingsEnvelope.ApiSportsStandingRow row) {
