@@ -5,6 +5,7 @@ import com.Equipo07_SportPulseMS.ms_standings.client.TeamsClient;
 import com.Equipo07_SportPulseMS.ms_standings.client.dto.ApiSportsStandingsEnvelope;
 import com.Equipo07_SportPulseMS.ms_standings.client.dto.TeamDetailResponse;
 import com.Equipo07_SportPulseMS.ms_standings.dto.StandingsResponse;
+import com.Equipo07_SportPulseMS.ms_standings.exception.TeamStandingNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +56,45 @@ class StandingsServiceTest {
         assertEquals(1, result.standings().size());
         assertEquals("FC Barcelona", result.standings().get(0).team().name());
         assertEquals("api-logo", result.standings().get(0).team().logo());
+    }
+
+    @Test
+    void getTeamStandingReturnsOnlyRequestedTeamPosition() {
+        when(standingsClient.getStandings(140, 2024)).thenReturn(envelopeWithTwoRowsUnordered());
+        when(teamsClient.getTeam(529)).thenReturn(new TeamDetailResponse(529, "FC Barcelona", "barca-logo"));
+        when(teamsClient.getTeam(541)).thenReturn(new TeamDetailResponse(541, "Real Madrid", "madrid-logo"));
+
+        var result = standingsService.getTeamStanding(529, 140, 2024);
+
+        assertEquals(529, result.team().id());
+        assertEquals("FC Barcelona", result.team().name());
+        assertEquals("barca-logo", result.team().logo());
+        assertEquals(1, result.rank());
+        assertEquals(48, result.points());
+        assertEquals(20, result.played());
+        assertEquals("WWWDW", result.form());
+    }
+
+    @Test
+    void getTeamStandingThrowsNotFoundWhenTeamIsNotInStandings() {
+        when(standingsClient.getStandings(140, 2024)).thenReturn(envelopeWithOneRow());
+        when(teamsClient.getTeam(529)).thenReturn(new TeamDetailResponse(529, "FC Barcelona", "barca-logo"));
+
+        assertThrows(TeamStandingNotFoundException.class, () -> standingsService.getTeamStanding(541, 140, 2024));
+    }
+
+    @Test
+    void getTeamStandingFallsBackToApiSportsTeamWhenTeamsServiceFails() {
+        when(standingsClient.getStandings(140, 2024)).thenReturn(envelopeWithOneRow());
+        when(teamsClient.getTeam(529)).thenThrow(new RuntimeException("ms-teams down"));
+
+        var result = standingsService.getTeamStanding(529, 140, 2024);
+
+        assertEquals(529, result.team().id());
+        assertEquals("FC Barcelona", result.team().name());
+        assertEquals("api-logo", result.team().logo());
+        assertEquals(1, result.rank());
+        assertEquals(48, result.points());
     }
 
     private ApiSportsStandingsEnvelope envelopeWithTwoRowsUnordered() {
