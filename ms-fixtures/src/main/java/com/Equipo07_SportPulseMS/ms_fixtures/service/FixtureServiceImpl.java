@@ -3,18 +3,14 @@ package com.Equipo07_SportPulseMS.ms_fixtures.service;
 import com.Equipo07_SportPulseMS.ms_fixtures.api.FixtureClient;
 import com.Equipo07_SportPulseMS.ms_fixtures.dto.FixtureEventResponse;
 import com.Equipo07_SportPulseMS.ms_fixtures.dto.FixtureFilters;
-import com.Equipo07_SportPulseMS.ms_fixtures.dto.FixtureItem;
 import com.Equipo07_SportPulseMS.ms_fixtures.dto.FixtureLiveResponse;
 import com.Equipo07_SportPulseMS.ms_fixtures.dto.FixtureResponse;
-import com.Equipo07_SportPulseMS.ms_fixtures.dto.FixtureStatus;
 import com.Equipo07_SportPulseMS.ms_fixtures.exception.FixtureNotFound;
-import com.Equipo07_SportPulseMS.ms_fixtures.mapper.FixtureMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Slf4j
