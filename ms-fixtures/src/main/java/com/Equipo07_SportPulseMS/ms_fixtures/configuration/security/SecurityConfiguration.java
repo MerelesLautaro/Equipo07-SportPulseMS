@@ -30,6 +30,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(http -> {
                     http.requestMatchers(HttpMethod.GET, "/api/fixtures/**").authenticated();
                     http.requestMatchers("/actuator/health").permitAll();
+                    http.requestMatchers("/swagger-ui*/**", "/v3/api-docs*/**" ).permitAll();
                     http.anyRequest().denyAll();
                 })
                 .addFilterBefore(internalAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
