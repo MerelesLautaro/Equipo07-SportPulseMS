@@ -30,7 +30,10 @@ public class SecurityFilterChainConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/api/auth/swagger-ui.html",
+                                "/api/auth/swagger-ui/**",
+                                "/api/auth/api-docs/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
