@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class NotificationScheduler {
 
-    /*
+    /*  Simula notificaciones por LOG, usar un fixedRate alto para evitar consumir las 100 request/day de la API
     private final SubscriptionRepository subscriptionRepository;
     private final NotificationProcessorService processorService;
     private final RateLimitService rateLimitService;
