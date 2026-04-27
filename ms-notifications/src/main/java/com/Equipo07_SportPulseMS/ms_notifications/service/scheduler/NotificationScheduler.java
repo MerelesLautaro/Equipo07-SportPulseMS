@@ -17,6 +17,7 @@ import java.util.List;
 @Slf4j
 public class NotificationScheduler {
 
+    /*
     private final SubscriptionRepository subscriptionRepository;
     private final NotificationProcessorService processorService;
     private final RateLimitService rateLimitService;
@@ -50,4 +51,5 @@ public class NotificationScheduler {
         log.info("Resetting rate limit flag");
         rateLimitService.reset();
     }
+    */
 }
