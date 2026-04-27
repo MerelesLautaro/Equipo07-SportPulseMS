@@ -5,6 +5,6 @@ import java.time.Instant;
 public record ApiErrorResponse(
         String error,
         String message,
-        Instant timestampt
+        Instant timestamp
 ) {
 }

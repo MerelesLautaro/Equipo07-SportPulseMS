@@ -24,9 +24,9 @@ public record FixtureLiveResponse(
                 fixture.id(),
                 fixture.status().elapsed(),
                 FixtureStatusResponse.fromStatus(status),
-                FixtureLeagueResponse.fromLeague(league),
-                FixtureTeamResponse.fromTeam(teams.home(), item.goals() != null ? item.goals().home() : null),
-                FixtureTeamResponse.fromTeam(teams.away(), item.goals() != null ? item.goals().away() : null)
+                FixtureLeagueResponse.fromLeagueWithoutRound(league),
+                FixtureTeamResponse.fromTeamWithoutLogo(teams.home(), item.goals() != null ? item.goals().home() : null),
+                FixtureTeamResponse.fromTeamWithoutLogo(teams.away(), item.goals() != null ? item.goals().away() : null)
         );
     }
 }
