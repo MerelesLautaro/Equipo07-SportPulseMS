@@ -21,7 +21,7 @@ public class NotificationScheduler {
     private final NotificationProcessorService processorService;
     private final RateLimitService rateLimitService;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 300000)
     public void processSubscriptions() {
 
         if (rateLimitService.isRateLimited()) {

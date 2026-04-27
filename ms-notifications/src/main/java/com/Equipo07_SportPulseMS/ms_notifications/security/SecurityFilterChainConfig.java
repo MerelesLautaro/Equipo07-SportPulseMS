@@ -28,7 +28,11 @@ public class SecurityFilterChainConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/actuator/health",
-                                "/api/fixtures/**"
+                                "/api/fixtures/**",
+                                "/api/notifications/swagger-ui.html",
+                                "/api/notifications/swagger-ui/**",
+                                "/api/notifications/api-docs/**",
+                                "/api/notifications/openapi.yaml"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

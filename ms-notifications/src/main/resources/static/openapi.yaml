@@ -1,0 +1,224 @@
+openapi: 3.0.3
+info:
+  title: SportPulse Notifications API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+security:
+  - bearerAuth: []
+
+paths:
+
+  /api/notifications/subscribe:
+    post:
+      summary: Crear suscripción
+      description: Permite crear una suscripción a eventos de un fixture o equipo
+      tags:
+        - Subscriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequest'
+      responses:
+        '201':
+          description: Suscripción creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionCreateResponse'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Suscripción duplicada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/notifications/subscriptions:
+    get:
+      summary: Obtener suscripciones activas
+      description: Retorna todas las suscripciones activas del usuario autenticado
+      tags:
+        - Subscriptions
+      responses:
+        '200':
+          description: Lista de suscripciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubscriptionResponse'
+
+  /api/notifications/subscribe/{subscriptionId}:
+    delete:
+      summary: Cancelar suscripción
+      description: Cancela una suscripción existente
+      tags:
+        - Subscriptions
+      parameters:
+        - name: subscriptionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Suscripción cancelada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionCancelResponse'
+        '403':
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Suscripción no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    CreateSubscriptionRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/SubscriptionType'
+        teamId:
+          type: integer
+          example: 33
+        fixtureId:
+          type: integer
+          example: 1508400
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEvent'
+        channel:
+          $ref: '#/components/schemas/NotificationChannel'
+        webhookUrl:
+          type: string
+          example: https://mi-webhook.com/notifications
+
+    SubscriptionCreateResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SubscriptionType'
+        teamId:
+          type: integer
+        fixtureId:
+          type: integer
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEvent'
+        channel:
+          $ref: '#/components/schemas/NotificationChannel'
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        createdAt:
+          type: string
+          format: date-time
+
+    SubscriptionResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/SubscriptionType'
+        teamId:
+          type: integer
+        fixtureId:
+          type: integer
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEvent'
+        channel:
+          $ref: '#/components/schemas/NotificationChannel'
+        webhookUrl:
+          type: string
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+
+    SubscriptionCancelResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: teamId is required
+        timestamp:
+          type: string
+          format: date-time
+
+    SubscriptionType:
+      type: string
+      enum:
+        - TEAM
+        - FIXTURE
+
+    SubscriptionStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - CANCELLED
+
+    NotificationChannel:
+      type: string
+      enum:
+        - LOG
+        - WEBHOOK
+
+    NotificationEvent:
+      type: string
+      enum:
+        - GOAL
+        - CARD
+        - SUBSTITUTION
