@@ -45,4 +45,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     List<Subscription> findByUserIdAndStatus(UUID userId, SubscriptionStatus status);
 
     Optional<Subscription> findByIdAndUserId(UUID id, UUID userId);
+
+    Optional<Subscription> findByIdAndStatus(UUID id, SubscriptionStatus status);
+
+    List<Subscription> findByStatus(SubscriptionStatus status);
 }

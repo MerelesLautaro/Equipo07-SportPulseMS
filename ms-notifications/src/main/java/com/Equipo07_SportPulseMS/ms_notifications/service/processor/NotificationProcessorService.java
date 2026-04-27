@@ -2,11 +2,15 @@ package com.Equipo07_SportPulseMS.ms_notifications.service.processor;
 
 import com.Equipo07_SportPulseMS.ms_notifications.entity.NotificationEvent;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.Subscription;
+import com.Equipo07_SportPulseMS.ms_notifications.entity.SubscriptionStatus;
 import com.Equipo07_SportPulseMS.ms_notifications.entity.SubscriptionType;
+import com.Equipo07_SportPulseMS.ms_notifications.repository.SubscriptionRepository;
 import com.Equipo07_SportPulseMS.ms_notifications.service.client.FixturesClient;
+import com.Equipo07_SportPulseMS.ms_notifications.service.client.RateLimitService;
 import com.Equipo07_SportPulseMS.ms_notifications.service.state.SubscriptionStateService;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.fixture.FixtureEventResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.fixture.FixtureResponse;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class NotificationProcessorService {
 
     private final FixturesClient fixturesClient;
     private final SubscriptionStateService stateService;
+    private final SubscriptionRepository subscriptionRepository;
+    private final RateLimitService rateLimitService;
 
     public void process(Subscription subscription) {
 
@@ -37,10 +43,27 @@ public class NotificationProcessorService {
 
         Integer fixtureId = subscription.getFixtureId();
 
-        List<FixtureEventResponse> events =
-                fixturesClient.getFixtureEvents(fixtureId);
+        try {
+            List<FixtureEventResponse> events =
+                    fixturesClient.getFixtureEvents(fixtureId);
 
-        processEvents(subscription, fixtureId, events);
+            processEvents(subscription, fixtureId, events);
+
+        } catch (FeignException e) {
+
+            if (e.status() == 404) {
+                cancelSubscription(subscription, "FIXTURE_NOT_FOUND");
+                return;
+            }
+
+            if (e.status() == 429 || e.status() == 500) {
+                log.warn("Rate limit alcanzado. Se pausa procesamiento.");
+                rateLimitService.activate();
+                return;
+            }
+
+            throw e;
+        }
     }
 
     // =========================
@@ -123,5 +146,23 @@ public class NotificationProcessorService {
                 event.elapsed(),
                 event.detail()
         );
+    }
+
+
+    private void cancelSubscription(Subscription subscription, String reason) {
+
+        if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
+            return;
+        }
+
+        log.warn(
+                "Cancelling subscription {} | fixture={} | reason={}",
+                subscription.getId(),
+                subscription.getFixtureId(),
+                reason
+        );
+
+        subscription.setStatus(SubscriptionStatus.CANCELLED);
+        subscriptionRepository.save(subscription);
     }
 }

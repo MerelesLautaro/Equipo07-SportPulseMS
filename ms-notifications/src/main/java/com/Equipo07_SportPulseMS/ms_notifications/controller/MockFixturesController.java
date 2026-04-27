@@ -2,6 +2,7 @@ package com.Equipo07_SportPulseMS.ms_notifications.controller;
 
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.fixture.FixtureEventResponse;
 import com.Equipo07_SportPulseMS.ms_notifications.dto.response.fixture.FixtureResponse;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/fixtures")
+@Profile("dev")
 public class MockFixturesController {
 
     private static int counter = 0;
