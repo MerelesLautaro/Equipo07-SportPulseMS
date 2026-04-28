@@ -3,6 +3,7 @@ package com.Equipo07_SportPulseMS.ms_teams.util.mapper;
 import com.Equipo07_SportPulseMS.ms_teams.dto.StadiumResponse;
 import com.Equipo07_SportPulseMS.ms_teams.dto.TeamItem;
 import com.Equipo07_SportPulseMS.ms_teams.dto.TeamResponse;
+import com.Equipo07_SportPulseMS.ms_teams.dto.Venue;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +22,7 @@ public class TeamMapper {
     }
 
     private TeamResponse createTeamResponse(TeamItem teamItem, Boolean isNational) {
-        var stadium = new StadiumResponse(teamItem.venue().name(), teamItem.venue().city(), teamItem.venue().capacity());
+        var stadium = this.createStadium(teamItem.venue());
         return new TeamResponse(
                 teamItem.team().id(),
                 teamItem.team().name(),
@@ -31,5 +32,14 @@ public class TeamMapper {
                 isNational,
                 stadium
         );
+    }
+
+    private StadiumResponse createStadium(Venue venue) {
+        return new StadiumResponse(
+                venue.name(),
+                venue.address(),
+                venue.city(),
+                venue.capacity(),
+                venue.surface());
     }
 }
