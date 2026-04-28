@@ -118,14 +118,7 @@ public class FixtureController {
                             mediaType = "application/json",
                             examples = @ExampleObject(
                                     name = "Forbidden response",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-04-27T04:16:25.606498737Z",
-                                              "status": 403,
-                                              "error": "Forbidden",
-                                              "path": "/api/fixtures"
-                                            }
-                                            """
+                                    value = ""
                             )
                     )
             ),
@@ -223,14 +216,7 @@ public class FixtureController {
                             mediaType = "application/json",
                             examples = @ExampleObject(
                                     name = "Forbidden response",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-04-27T04:16:25.606498737Z",
-                                              "status": 403,
-                                              "error": "Forbidden",
-                                              "path": "/api/fixtures/live"
-                                            }
-                                            """
+                                    value = ""
                             )
                     )
             ),
@@ -331,14 +317,7 @@ public class FixtureController {
                             mediaType = "application/json",
                             examples = @ExampleObject(
                                     name = "Forbidden response",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-04-27T04:16:25.606498737Z",
-                                              "status": 403,
-                                              "error": "Forbidden",
-                                              "path": "/api/fixtures/1508400/events"
-                                            }
-                                            """
+                                    value = ""
                             )
                     )
             ),
