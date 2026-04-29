@@ -1,0 +1,512 @@
+{
+  "info": {
+    "_postman_id": "b0d3380e-53c2-4e3b-b70d-1f7c3f1b3f9f",
+    "name": "SportPulseMS - Fixtures",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Fixtures - Listar con filtros",
+      "item": [
+        {
+          "name": "Happy - con filtros (league, team, date, status)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?league=254&team=3002&date=2026-04-27&status=LIVE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ],
+              "query": [
+                {
+                  "key": "league",
+                  "value": "254"
+                },
+                {
+                  "key": "team",
+                  "value": "3002"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-04-27"
+                },
+                {
+                  "key": "status",
+                  "value": "LIVE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Happy - sin filtros (todos los fixtures)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - fecha invalida (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?date=27-04-2026",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "27-04-2026"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - status invalido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?status=INVALID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "INVALID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - sin Authorization (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - Authorization invalido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - sin X-Internal-Secret (403 si aplica)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fixtures - Live",
+      "item": [
+        {
+          "name": "Happy - listar en vivo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "live"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - sin Authorization (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "live"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - Authorization invalido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "live"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - sin X-Internal-Secret (403 si aplica)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "live"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fixtures - Events",
+      "item": [
+        {
+          "name": "Happy - eventos de fixture",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "{{fixture_id}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - fixture no encontrado (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id_not_found}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "{{fixture_id_not_found}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - sin Authorization (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "{{fixture_id}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - Authorization invalido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Secret",
+                "value": "{{internal_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "{{fixture_id}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bad - sin X-Internal-Secret (403 si aplica)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "fixtures",
+                "{{fixture_id}}",
+                "events"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8085"
+    },
+    {
+      "key": "auth_token",
+      "value": "<token>"
+    },
+    {
+      "key": "auth_token_invalid",
+      "value": "invalid-token"
+    },
+    {
+      "key": "internal_secret",
+      "value": "<secret>"
+    },
+    {
+      "key": "fixture_id",
+      "value": "1508400"
+    },
+    {
+      "key": "fixture_id_not_found",
+      "value": "1"
+    }
+  ]
+}
