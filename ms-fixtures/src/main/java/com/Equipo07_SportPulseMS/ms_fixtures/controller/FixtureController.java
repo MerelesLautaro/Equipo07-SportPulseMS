@@ -29,21 +29,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/fixtures")
 @RequiredArgsConstructor
-@Tag(name = "Fixtures", description = "Operations to query fixtures, live matches, and match events")
+    @Tag(name = "Fixtures", description = "Operaciones para consultar fixtures, partidos en vivo y eventos del partido")
 public class FixtureController {
 
     private final FixtureService fixtureService;
 
     @Operation(
-            summary = "List fixtures with filters",
-            description = "Returns a list of fixtures. Supports filtering by league, team, date, and status.",
+            summary = "Lista fixtures mediante filtros",
+            description = "Retorna una lista de fixtures. Mediante filtros como league, team, date y status.",
             security = @SecurityRequirement(name = "bearerAuth"),
             parameters = {
                     @Parameter(
                             name = "Authorization",
                             in = ParameterIn.HEADER,
                             required = true,
-                            description = "Required header with JWT token in the format: Bearer <token>",
+                            description = "Requiere cabecera con JWT token con el formato: Bearer <token>",
                             example = "Bearer <token>"
                     )
             }
@@ -51,7 +51,7 @@ public class FixtureController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Fixture list retrieved successfully",
+                    description = "Lista de fixtures obtenida correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = FixtureResponse.class)),
@@ -95,16 +95,16 @@ public class FixtureController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid query parameters",
+                    description = "Parámetros de consulta inválidos",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = com.Equipo07_SportPulseMS.ms_fixtures.exception.ApiErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "Invalid filter error",
+                                    name = "Error de filtro inválido",
                                     value = """
                                             {
                                               "error": "REQUEST_PARAMETER_INVALID",
-                                              "message": "Invalid date format. Expected format is YYYY-MM-DD.",
+                                              "message": "Formato de fecha inválido. El formato esperado es YYYY-MM-DD.",
                                               "timestamp": "2026-04-27T04:16:25.606498737Z"
                                             }
                                             """
@@ -113,11 +113,11 @@ public class FixtureController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden - missing or invalid authentication token",
+                    description = "Forbidden - token de autenticación faltante o inválido",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "Forbidden response",
+                                    name = "Respuesta Forbidden",
                                     value = ""
                             )
                     )
@@ -128,11 +128,11 @@ public class FixtureController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "Unexpected error",
+                                    name = "Error inesperado",
                                     value = """
                                             {
                                               "error": "INTERNAL_SERVER_ERROR",
-                                              "message": "An unexpected error occurred",
+                                               "message": "Ocurrió un error inesperado",
                                               "timestamp": "2026-04-27T04:16:25.606498737Z"
                                             }
                                             """
@@ -142,13 +142,13 @@ public class FixtureController {
     })
     @GetMapping
     public ResponseEntity<List<FixtureResponse>> getAllBy(
-            @Parameter(description = "League identifier.", example = "254")
+            @Parameter(description = "Identificador de league.", example = "254")
             @RequestParam(required = false) Integer league,
-            @Parameter(description = "Team identifier.", example = "3002")
+            @Parameter(description = "Identificador de team.", example = "3002")
             @RequestParam(required = false) Integer team,
-            @Parameter(description = "Fixture date in YYYY-MM-DD format.", example = "2026-04-27")
+            @Parameter(description = "Fecha del fixture en formato YYYY-MM-DD.", example = "2026-04-27")
             @RequestParam(required = false) String date,
-            @Parameter(description = "Fixture status: NS, LIVE, or FT.", example = "LIVE")
+            @Parameter(description = "Status del fixture: NS, LIVE, o FT.", example = "LIVE")
             @RequestParam(required = false) String status) {
 
         var filters = FixtureFilters.fromRequestParams(league, team, date, status);
@@ -158,15 +158,15 @@ public class FixtureController {
     }
 
     @Operation(
-            summary = "List live fixtures",
-            description = "Returns live matches with elapsed minute and partial score.",
+            summary = "Listar fixtures en vivo",
+            description = "Retorna partidos en vivo con minuto transcurrido y marcador parcial.",
             security = @SecurityRequirement(name = "bearerAuth"),
             parameters = {
                     @Parameter(
                             name = "Authorization",
                             in = ParameterIn.HEADER,
                             required = true,
-                            description = "Required header with JWT token in the format: Bearer <token>",
+                            description = "Requiere header con JWT token en el formato: Bearer <token>",
                             example = "Bearer <token>"
                     )
             }
@@ -174,12 +174,12 @@ public class FixtureController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Live fixtures retrieved successfully",
+                    description = "Fixtures en vivo obtenidos correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = FixtureLiveResponse.class)),
                             examples = @ExampleObject(
-                                    name = "Success response",
+                                    name = "Respuesta exitosa",
                                     value = """
                                             [
                                               {
@@ -211,11 +211,11 @@ public class FixtureController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden - missing or invalid authentication token",
+                    description = "Forbidden - token de autenticación faltante o inválido",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "Forbidden response",
+                                    name = "Respuesta Forbidden",
                                     value = ""
                             )
                     )
@@ -226,11 +226,11 @@ public class FixtureController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "Unexpected error",
+                                    name = "Error inesperado",
                                     value = """
                                             {
                                               "error": "INTERNAL_SERVER_ERROR",
-                                              "message": "An unexpected error occurred",
+                                               "message": "Ocurrió un error inesperado",
                                               "timestamp": "2026-04-27T04:16:25.606498737Z"
                                             }
                                             """
@@ -246,15 +246,15 @@ public class FixtureController {
     }
 
     @Operation(
-            summary = "Get fixture events",
-            description = "Returns events of a specific match (goals, cards, substitutions, etc.).",
+            summary = "Obtener eventos del fixture",
+            description = "Retorna eventos de un partido específico (goles, tarjetas, sustituciones, etc.).",
             security = @SecurityRequirement(name = "bearerAuth"),
             parameters = {
                     @Parameter(
                             name = "Authorization",
                             in = ParameterIn.HEADER,
                             required = true,
-                            description = "Required header with JWT token in the format: Bearer <token>",
+                            description = "Requiere header con JWT token en el formato: Bearer <token>",
                             example = "Bearer <token>"
                     )
             }
@@ -262,12 +262,12 @@ public class FixtureController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Fixture events retrieved successfully",
+                    description = "Eventos del fixture obtenidos correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = FixtureEventResponse.class)),
                             examples = @ExampleObject(
-                                    name = "Success response",
+                                    name = "Respuesta exitosa",
                                     value = """
                                             [
                                               {
@@ -294,16 +294,16 @@ public class FixtureController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Fixture not found",
+                    description = "Fixture no encontrado",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = com.Equipo07_SportPulseMS.ms_fixtures.exception.ApiErrorResponse.class),
                             examples = @ExampleObject(
-                                    name = "Fixture not found",
+                                    name = "Fixture no encontrado",
                                     value = """
                                             {
                                               "error": "FIXTURE_NOT_FOUND",
-                                              "message": "Fixture with id 1 not found",
+                                               "message": "No se encontró el fixture con id 1",
                                               "timestamp": "2026-04-27T04:16:25.606498737Z"
                                             }
                                             """
@@ -312,11 +312,11 @@ public class FixtureController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden - missing or invalid authentication token",
+                    description = "Forbidden - token de autenticación faltante o inválido",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "Forbidden response",
+                                    name = "Respuesta Forbidden",
                                     value = ""
                             )
                     )
@@ -327,11 +327,11 @@ public class FixtureController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    name = "Unexpected error",
+                                    name = "Error inesperado",
                                     value = """
                                             {
                                               "error": "INTERNAL_SERVER_ERROR",
-                                              "message": "An unexpected error occurred",
+                                               "message": "Ocurrió un error inesperado",
                                               "timestamp": "2026-04-27T04:16:25.606498737Z"
                                             }
                                             """
@@ -341,7 +341,7 @@ public class FixtureController {
     })
     @GetMapping("/{fixtureId}/events")
     public ResponseEntity<List<FixtureEventResponse>> getById(
-            @Parameter(description = "Fixture identifier to query.", example = "1508400")
+            @Parameter(description = "Identificador de fixture a consultar.", example = "1508400")
             @PathVariable int fixtureId) {
         var response = fixtureService.getFixtureById(fixtureId);
         return ResponseEntity.ok(response);
