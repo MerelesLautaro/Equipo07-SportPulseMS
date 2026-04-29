@@ -28,7 +28,10 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
-                    http.requestMatchers("/api/fixtures/swagger-ui.html","/api/fixtures/swagger-ui/**", "/api/fixtures/api-docs/**").permitAll();
+                    http.requestMatchers(
+                            "/api/fixtures/swagger-ui.html",
+                            "/api/fixtures/swagger-ui*/**",
+                            "/api/fixtures/api-docs*/**").permitAll();
                     http.requestMatchers(HttpMethod.GET, "/api/fixtures/**").authenticated();
                     http.requestMatchers("/actuator/health").permitAll();
                     http.anyRequest().denyAll();
