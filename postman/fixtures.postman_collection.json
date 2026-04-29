@@ -154,13 +154,7 @@
           "name": "Bad - sin Authorization (403)",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
-              }
-            ],
+            "header": [],
             "url": {
               "raw": "{{base_url}}/api/fixtures",
               "host": [
@@ -182,11 +176,6 @@
                 "key": "Authorization",
                 "value": "Bearer {{auth_token_invalid}}",
                 "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
               }
             ],
             "url": {
@@ -205,13 +194,7 @@
           "name": "Bad - sin X-Internal-Secret (403 si aplica)",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}",
-                "type": "text"
-              }
-            ],
+            "header": [],
             "url": {
               "raw": "{{base_url}}/api/fixtures",
               "host": [
@@ -486,7 +469,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8085"
+      "value": "http://localhost:8080"
     },
     {
       "key": "auth_token",
