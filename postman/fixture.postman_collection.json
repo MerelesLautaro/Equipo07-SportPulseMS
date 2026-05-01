@@ -1,0 +1,721 @@
+{
+  "info": {
+    "_postman_id": "fixture-controller-tests-2026",
+    "name": "SportPulseMS - Fixture Controller Tests",
+    "description": "Tests completos para FixtureController cubriendo happy paths y bad paths",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auth_token_invalid",
+      "value": "invalid-token-xyz",
+      "type": "string"
+    },
+    {
+      "key": "league_id",
+      "value": "266",
+      "type": "number"
+    },
+    {
+      "key": "team_id",
+      "value": "2321",
+      "type": "number"
+    },
+    {
+      "key": "fixture_id",
+      "value": "1511568",
+      "type": "number"
+    },
+    {
+      "key": "invalid_fixture_id",
+      "value": "9999999",
+      "type": "number"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. GET /api/fixtures - Listar fixtures",
+      "item": [
+        {
+          "name": "Happy - Sin filtros (todos los fixtures)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Response has required structure\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        const fixture = jsonData[0];",
+                  "        pm.expect(fixture).to.have.property('id');",
+                  "        pm.expect(fixture).to.have.property('date');",
+                  "        pm.expect(fixture).to.have.property('status');",
+                  "        pm.expect(fixture).to.have.property('league');",
+                  "        pm.expect(fixture).to.have.property('homeTeam');",
+                  "        pm.expect(fixture).to.have.property('awayTeam');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Con filtro league",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?league={{league_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                {
+                  "key": "league",
+                  "value": "{{league_id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Con filtro team",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?team={{team_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                {
+                  "key": "team",
+                  "value": "{{team_id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Con filtro date (YYYY-MM-DD)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?date=2026-04-27",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-04-27"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Con filtro status (NS, LIVE, FT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?status=LIVE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "LIVE"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Con todos los filtros",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?league={{league_id}}&team={{team_id}}&date=2026-04-27&status=LIVE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                { "key": "league", "value": "{{league_id}}" },
+                { "key": "team", "value": "{{team_id}}" },
+                { "key": "date", "value": "2026-04-27" },
+                { "key": "status", "value": "LIVE" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Sin Authorization header (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Authorization token inválido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Formato de fecha inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?date=27-04-2026",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "27-04-2026"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", () => {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Response has error property\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});",
+                  "pm.test(\"Error message mentions date format\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.include('Invalid date format');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Status inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures?status=INVALID_STATUS",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "INVALID_STATUS"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", () => {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Response has error property\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. GET /api/fixtures/live - Fixtures en vivo",
+      "item": [
+        {
+          "name": "Happy - Listar fixtures en vivo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "live"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Response has required fields for live fixtures\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        const fixture = jsonData[0];",
+                  "        pm.expect(fixture).to.have.property('id');",
+                  "        pm.expect(fixture).to.have.property('elapsed');",
+                  "        pm.expect(fixture).to.have.property('status');",
+                  "        pm.expect(fixture).to.have.property('league');",
+                  "        pm.expect(fixture).to.have.property('homeTeam');",
+                  "        pm.expect(fixture).to.have.property('awayTeam');",
+                  "        pm.expect(fixture.homeTeam).to.have.property('goals');",
+                  "        pm.expect(fixture.awayTeam).to.have.property('goals');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Sin Authorization header (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "live"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Authorization token inválido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/live",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "live"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. GET /api/fixtures/{fixtureId}/events - Eventos del fixture",
+      "item": [
+        {
+          "name": "Happy - Obtener eventos de fixture válido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "{{fixture_id}}", "events"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Events have required structure\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        const event = jsonData[0];",
+                  "        pm.expect(event).to.have.property('elapsed');",
+                  "        pm.expect(event).to.have.property('type');",
+                  "        pm.expect(event).to.have.property('detail');",
+                  "        pm.expect(event).to.have.property('team');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Fixture sin eventos (array vacío)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "{{fixture_id}}", "events"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Fixture no encontrado (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{invalid_fixture_id}}/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "{{invalid_fixture_id}}", "events"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", () => {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"Response has FIXTURE_NOT_FOUND error\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.equal('FIXTURE_NOT_FOUND');",
+                  "});",
+                  "pm.test(\"Response mentions fixture id\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Sin Authorization header (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "{{fixture_id}}", "events"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Authorization token inválido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/fixtures/{{fixture_id}}/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "fixtures", "{{fixture_id}}", "events"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
