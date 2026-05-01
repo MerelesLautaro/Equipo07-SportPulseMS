@@ -1,0 +1,505 @@
+{
+  "info": {
+    "name": "SportPulse MS Standings API",
+    "description": "Colección de tests para los endpoints de clasificación del Microservicio Standings",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "leagueId",
+      "value": "39",
+      "type": "number"
+    },
+    {
+      "key": "seasonYear",
+      "value": "2024",
+      "type": "number"
+    },
+    {
+      "key": "teamId",
+      "value": "40",
+      "type": "number"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /api/standings - Happy Path",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings?league={{leagueId}}&season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings"],
+          "query": [
+            { "key": "league", "value": "{{leagueId}}" },
+            { "key": "season", "value": "{{seasonYear}}" }
+          ]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has league object\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('league');",
+              "    pm.expect(jsonData.league).to.have.property('id');",
+              "    pm.expect(jsonData.league).to.have.property('name');",
+              "    pm.expect(jsonData.league).to.have.property('country');",
+              "    pm.expect(jsonData.league).to.have.property('season');",
+              "});",
+              "",
+              "pm.test(\"Response has standings array\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('standings');",
+              "    pm.expect(jsonData.standings).to.be.an('array');",
+              "});",
+              "",
+              "pm.test(\"Standings entries have required fields\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.standings.length > 0) {",
+              "        const entry = jsonData.standings[0];",
+              "        pm.expect(entry).to.have.property('rank');",
+              "        pm.expect(entry).to.have.property('team');",
+              "        pm.expect(entry.team).to.have.property('id');",
+              "        pm.expect(entry.team).to.have.property('name');",
+              "        pm.expect(entry).to.have.property('points');",
+              "        pm.expect(entry).to.have.property('played');",
+              "        pm.expect(entry).to.have.property('won');",
+              "        pm.expect(entry).to.have.property('drawn');",
+              "        pm.expect(entry).to.have.property('lost');",
+              "    }",
+              "});",
+              "",
+              "pm.test(\"Response time is acceptable\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings - Sin parametros (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings"]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 - Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings - Solo league (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings?league={{leagueId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings"],
+          "query": [{ "key": "league", "value": "{{leagueId}}" }]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 - Missing season\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings - Solo season (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings?season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings"],
+          "query": [{ "key": "season", "value": "{{seasonYear}}" }]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 - Missing league\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings - Sin Authorization (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings?league={{leagueId}}&season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings"],
+          "query": [
+            { "key": "league", "value": "{{leagueId}}" },
+            { "key": "season", "value": "{{seasonYear}}" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401 - Unauthorized\", function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Happy Path",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/{{teamId}}?league={{leagueId}}&season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "{{teamId}}"],
+          "query": [
+            { "key": "league", "value": "{{leagueId}}" },
+            { "key": "season", "value": "{{seasonYear}}" }
+          ]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has team object\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('team');",
+              "    pm.expect(jsonData.team).to.have.property('id');",
+              "    pm.expect(jsonData.team).to.have.property('name');",
+              "});",
+              "",
+              "pm.test(\"Response has league info\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('league');",
+              "    pm.expect(jsonData.league).to.have.property('id');",
+              "    pm.expect(jsonData.league).to.have.property('name');",
+              "});",
+              "",
+              "pm.test(\"Response has standing fields\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('season');",
+              "    pm.expect(jsonData).to.have.property('rank');",
+              "    pm.expect(jsonData).to.have.property('points');",
+              "    pm.expect(jsonData).to.have.property('played');",
+              "    pm.expect(jsonData).to.have.property('form');",
+              "    pm.expect(jsonData).to.have.property('description');",
+              "});",
+              "",
+              "pm.test(\"Rank is a positive number\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.rank).to.be.a('number');",
+              "    pm.expect(jsonData.rank).to.be.above(0);",
+              "});",
+              "",
+              "pm.test(\"Points and played are non-negative\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.points).to.be.at.least(0);",
+              "    pm.expect(jsonData.played).to.be.at.least(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Sin query params (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/{{teamId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "{{teamId}}"]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 - Missing query params\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Solo league (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/{{teamId}}?league={{leagueId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "{{teamId}}"],
+          "query": [{ "key": "league", "value": "{{leagueId}}" }]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 - Missing season\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Solo season (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/{{teamId}}?season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "{{teamId}}"],
+          "query": [{ "key": "season", "value": "{{seasonYear}}" }]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 - Missing league\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Sin Authorization (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/{{teamId}}?league={{leagueId}}&season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "{{teamId}}"],
+          "query": [
+            { "key": "league", "value": "{{leagueId}}" },
+            { "key": "season", "value": "{{seasonYear}}" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401 - Unauthorized\", function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Equipo no encontrado (404)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/999999?league={{leagueId}}&season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "999999"],
+          "query": [
+            { "key": "league", "value": "{{leagueId}}" },
+            { "key": "season", "value": "{{seasonYear}}" }
+          ]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404 - Team not found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - teamId invalido (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/abc?league={{leagueId}}&season={{seasonYear}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "abc"],
+          "query": [
+            { "key": "league", "value": "{{leagueId}}" },
+            { "key": "season", "value": "{{seasonYear}}" }
+          ]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 500 - Invalid parameter types\", function () {",
+              "    pm.response.to.have.status(500);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/standings/team/{teamId} - Parametros invalidos (Bad Path)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/standings/team/{{teamId}}?league=xyz&season=abc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "standings", "team", "{{teamId}}"],
+          "query": [
+            { "key": "league", "value": "xyz" },
+            { "key": "season", "value": "abc" }
+          ]
+        },
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 500 - Invalid parameter types\", function () {",
+              "    pm.response.to.have.status(500);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+
