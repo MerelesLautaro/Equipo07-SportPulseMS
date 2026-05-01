@@ -23,7 +23,7 @@ springdoc:
 resilience4j:
   circuitbreaker:
     instances:
-      dashboardService:
+      dashboardClient:
         registerHealthIndicator: true
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
@@ -34,11 +34,12 @@ resilience4j:
 
   retry:
     instances:
-      dashboardService:
+      dashboardClient:
         maxAttempts: 3
         waitDuration: 500ms
         enableExponentialBackoff: true
         exponentialBackoffMultiplier: 2
         retryExceptions:
-          - java.lang.RuntimeException
           - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.reactive.function.client.WebClientResponseException
