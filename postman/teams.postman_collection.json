@@ -1,87 +1,152 @@
 {
   "info": {
-    "_postman_id": "7f2a9f34-0b2c-4b57-9c8c-18d5b4b5d2d4",
-    "name": "SportPulseMS - Teams",
+    "_postman_id": "team-controller-tests-2026",
+    "name": "SportPulseMS - Team Controller Tests",
+    "description": "Tests completos para TeamController cubriendo happy paths y bad paths",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auth_token_invalid",
+      "value": "invalid-token-xyz",
+      "type": "string"
+    },
+    {
+      "key": "league_id",
+      "value": "39",
+      "type": "number"
+    },
+    {
+      "key": "season",
+      "value": "2023",
+      "type": "number"
+    },
+    {
+      "key": "team_id",
+      "value": "33",
+      "type": "number"
+    },
+    {
+      "key": "invalid_team_id",
+      "value": "9999999",
+      "type": "number"
+    }
+  ],
   "item": [
     {
-      "name": "Teams - Listar por liga y temporada",
+      "name": "1. GET /api/teams - Listar equipos por liga y temporada",
       "item": [
         {
-          "name": "Happy - con league y season",
+          "name": "Happy - Con league y season (parámetros requeridos)",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
                 "type": "text"
               }
             ],
             "url": {
               "raw": "{{base_url}}/api/teams?league={{league_id}}&season={{season}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
               "query": [
-                {
-                  "key": "league",
-                  "value": "{{league_id}}"
-                },
-                {
-                  "key": "season",
-                  "value": "{{season}}"
-                }
+                { "key": "league", "value": "{{league_id}}" },
+                { "key": "season", "value": "{{season}}" }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "pm.test(\"Response has required team structure\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        const team = jsonData[0];",
+                  "        pm.expect(team).to.have.property('id');",
+                  "        pm.expect(team).to.have.property('name');",
+                  "        pm.expect(team).to.have.property('country');",
+                  "        pm.expect(team).to.have.property('logo');",
+                  "        pm.expect(team).to.have.property('founded');",
+                  "        pm.expect(team).to.have.property('stadium');",
+                  "        pm.expect(team.stadium).to.have.property('name');",
+                  "        pm.expect(team.stadium).to.have.property('city');",
+                  "        pm.expect(team.stadium).to.have.property('capacity');",
+                  "    }",
+                  "});",
+                  "pm.test(\"Logo URL is valid format\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0].logo).to.include('api-sports.io');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
-          "name": "Bad - sin league (403)",
+          "name": "Happy - Diferentes ligas (Premier League)",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
                 "type": "text"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/teams?season={{season}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
+              "raw": "{{base_url}}/api/teams?league=39&season=2024",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
               "query": [
-                {
-                  "key": "season",
-                  "value": "{{season}}"
-                }
+                { "key": "league", "value": "39" },
+                { "key": "season", "value": "2024" }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
-          "name": "Bad - sin season (403)",
+          "name": "Happy - Diferentes temporadas (La Liga)",
           "request": {
             "method": "GET",
             "header": [
@@ -89,33 +154,97 @@
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}",
                 "type": "text"
-              },
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams?league=140&season=2023",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
+              "query": [
+                { "key": "league", "value": "140" },
+                { "key": "season", "value": "2023" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Sin parámetros",
+          "request": {
+            "method": "GET",
+            "header": [
               {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 403\", () => {",
+                  "    pm.expect([400, 403]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Solo league, sin season",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
                 "type": "text"
               }
             ],
             "url": {
               "raw": "{{base_url}}/api/teams?league={{league_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
-              "query": [
-                {
-                  "key": "league",
-                  "value": "{{league_id}}"
-                }
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
+              "query": [{ "key": "league", "value": "{{league_id}}" }]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 403\", () => {",
+                  "    pm.expect([400, 403]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
-          "name": "Bad - league invalido (403)",
+          "name": "Bad - Solo season, sin league",
           "request": {
             "method": "GET",
             "header": [
@@ -123,289 +252,130 @@
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}",
                 "type": "text"
-              },
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams?season={{season}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
+              "query": [{ "key": "season", "value": "{{season}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 403\", () => {",
+                  "    pm.expect([400, 403]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - league no numérico",
+          "request": {
+            "method": "GET",
+            "header": [
               {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
                 "type": "text"
               }
             ],
             "url": {
               "raw": "{{base_url}}/api/teams?league=abc&season={{season}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
               "query": [
-                {
-                  "key": "league",
-                  "value": "abc"
-                },
-                {
-                  "key": "season",
-                  "value": "{{season}}"
-                }
+                { "key": "league", "value": "abc" },
+                { "key": "season", "value": "{{season}}" }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
-          "name": "Bad - season invalido (403)",
+          "name": "Bad - season no numérico",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
                 "type": "text"
               }
             ],
             "url": {
               "raw": "{{base_url}}/api/teams?league={{league_id}}&season=abcd",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
               "query": [
-                {
-                  "key": "league",
-                  "value": "{{league_id}}"
-                },
-                {
-                  "key": "season",
-                  "value": "abcd"
-                }
+                { "key": "league", "value": "{{league_id}}" },
+                { "key": "season", "value": "abcd" }
               ]
             }
-          }
-        },
-        {
-          "name": "Bad - sin Authorization (403)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/teams?league={{league_id}}&season={{season}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
-              "query": [
-                {
-                  "key": "league",
-                  "value": "{{league_id}}"
-                },
-                {
-                  "key": "season",
-                  "value": "{{season}}"
-                }
-              ]
             }
-          }
+          ]
         },
         {
-          "name": "Bad - Authorization invalido (403)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token_invalid}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/teams?league={{league_id}}&season={{season}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
-              "query": [
-                {
-                  "key": "league",
-                  "value": "{{league_id}}"
-                },
-                {
-                  "key": "season",
-                  "value": "{{season}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Bad - sin X-Internal-Secret (403 si aplica)",
+          "name": "Bad - Sin Authorization header (403)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/api/teams?league={{league_id}}&season={{season}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams"
-              ],
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
               "query": [
-                {
-                  "key": "league",
-                  "value": "{{league_id}}"
-                },
-                {
-                  "key": "season",
-                  "value": "{{season}}"
-                }
+                { "key": "league", "value": "{{league_id}}" },
+                { "key": "season", "value": "{{season}}" }
               ]
             }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Teams - Detalle por ID",
-      "item": [
-        {
-          "name": "Happy - detalle por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/teams/{{team_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams",
-                "{{team_id}}"
-              ]
             }
-          }
+          ]
         },
         {
-          "name": "Bad - team no encontrado (404)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/teams/{{team_id_not_found}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams",
-                "{{team_id_not_found}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Bad - teamId invalido (400)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}",
-                "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/teams/abc",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams",
-                "abc"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Bad - sin Authorization (403)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/teams/{{team_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams",
-                "{{team_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Bad - Authorization invalido (403)",
+          "name": "Bad - Authorization token inválido (403)",
           "request": {
             "method": "GET",
             "header": [
@@ -413,28 +383,39 @@
                 "key": "Authorization",
                 "value": "Bearer {{auth_token_invalid}}",
                 "type": "text"
-              },
-              {
-                "key": "X-Internal-Secret",
-                "value": "{{internal_secret}}",
-                "type": "text"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/teams/{{team_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams",
-                "{{team_id}}"
+              "raw": "{{base_url}}/api/teams?league={{league_id}}&season={{season}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams"],
+              "query": [
+                { "key": "league", "value": "{{league_id}}" },
+                { "key": "season", "value": "{{season}}" }
               ]
             }
-          }
-        },
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. GET /api/teams/{teamId} - Detalle de equipo por ID",
+      "item": [
         {
-          "name": "Bad - sin X-Internal-Secret (403 si aplica)",
+          "name": "Happy - Detalle de equipo válido",
           "request": {
             "method": "GET",
             "header": [
@@ -446,52 +427,211 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/teams/{{team_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "teams",
-                "{{team_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams", "{{team_id}}"]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an object\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('object');",
+                  "});",
+                  "pm.test(\"Response has required team fields\", () => {",
+                  "    const team = pm.response.json();",
+                  "    pm.expect(team).to.have.property('id');",
+                  "    pm.expect(team).to.have.property('name');",
+                  "    pm.expect(team).to.have.property('country');",
+                  "    pm.expect(team).to.have.property('logo');",
+                  "    pm.expect(team).to.have.property('founded');",
+                  "    pm.expect(team).to.have.property('national');",
+                  "    pm.expect(team).to.have.property('stadium');",
+                  "});",
+                  "pm.test(\"Stadium has complete details\", () => {",
+                  "    const team = pm.response.json();",
+                  "    pm.expect(team.stadium).to.have.property('name');",
+                  "    pm.expect(team.stadium).to.have.property('city');",
+                  "    pm.expect(team.stadium).to.have.property('capacity');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Happy - Equipo nacional (national: true)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams/4",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams", "4"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Team is national\", () => {",
+                  "    const team = pm.response.json();",
+                  "    pm.expect(team.national).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Equipo no encontrado (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams/{{invalid_team_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams", "{{invalid_team_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", () => {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"Response has TEAM_NOT_FOUND error\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.equal('TEAM_NOT_FOUND');",
+                  "});",
+                  "pm.test(\"Response has error message\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('equipo');",
+                  "});",
+                  "pm.test(\"Response has timestamp\", () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('timestamp');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - teamId inválido (no numérico)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams/abc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams", "abc"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 403\", () => {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Sin Authorization header (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/teams/{{team_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams", "{{team_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bad - Authorization token inválido (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token_invalid}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teams/{{team_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teams", "{{team_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", () => {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:8080"
-    },
-    {
-      "key": "auth_token",
-      "value": "<token>"
-    },
-    {
-      "key": "auth_token_invalid",
-      "value": "invalid-token"
-    },
-    {
-      "key": "internal_secret",
-      "value": "<secret>"
-    },
-    {
-      "key": "league_id",
-      "value": "39"
-    },
-    {
-      "key": "season",
-      "value": "2023"
-    },
-    {
-      "key": "team_id",
-      "value": "33"
-    },
-    {
-      "key": "team_id_not_found",
-      "value": "-1"
     }
   ]
 }
