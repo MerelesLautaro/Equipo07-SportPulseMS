@@ -96,4 +96,3 @@ http://localhost:8080/api/{servicio}/swagger-ui/index.html
 - Lautaro Mereles → https://github.com/MerelesLautaro
 - Alberto Cruz → https://github.com/alberto-cruz-mtz
 - Joaquín → https://github.com/Joaquin5362656
-```
