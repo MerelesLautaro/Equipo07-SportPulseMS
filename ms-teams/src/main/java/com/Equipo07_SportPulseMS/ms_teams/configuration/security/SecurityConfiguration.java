@@ -28,6 +28,10 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
+                    http.requestMatchers(
+                            "/api/teams/swagger-ui.html",
+                            "/api/teams/swagger-ui*/**",
+                            "/api/teams/api-docs*/**").permitAll();
                     http.requestMatchers(HttpMethod.GET, "/api/teams/**").authenticated();
                     http.requestMatchers("/actuator/health").permitAll();
                     http.anyRequest().denyAll();
