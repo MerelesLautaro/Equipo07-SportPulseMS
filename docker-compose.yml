@@ -107,6 +107,7 @@ services:
       FIXTURES_SERVICE_URL: http://ms-fixtures:8085
       STANDINGS_SERVICE_URL: http://ms-standings:8086
       LEAGUES_SERVICE_URL: http://ms-leagues:8082
+      APISPORTS_KEY: ${APISPORTS_KEY}
 
   redis:
     image: redis:7
