@@ -19,7 +19,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/actuator/info", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/info",
+                                "/api/leagues/swagger-ui.html",
+                                "/api/leagues/swagger-ui/**",
+                                "/api/leagues/api-docs/**").permitAll()
                         .requestMatchers("/api/leagues/**").authenticated()
                         .anyRequest().denyAll()
                 )
