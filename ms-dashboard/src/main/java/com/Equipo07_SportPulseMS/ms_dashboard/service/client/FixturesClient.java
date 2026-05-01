@@ -1,5 +1,6 @@
 package com.Equipo07_SportPulseMS.ms_dashboard.service.client;
 
+import com.Equipo07_SportPulseMS.ms_dashboard.config.ResilienceFactory;
 import com.Equipo07_SportPulseMS.ms_dashboard.dto.response.fixture.FixtureResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 public class FixturesClient {
 
     private final WebClient fixturesWebClient;
+    private final ResilienceFactory resilienceFactory;
 
     public Mono<List<FixtureResponseDTO>> getFixtures(Integer league, String date) {
         return fixturesWebClient.get()
@@ -26,6 +28,7 @@ public class FixturesClient {
                 })
                 .retrieve()
                 .bodyToFlux(FixtureResponseDTO.class)
-                .collectList();
+                .collectList()
+                .transform(resilienceFactory.decorate());
     }
 }
