@@ -164,3 +164,9 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    path: /api/gateway/api-docs
+  swagger-ui:
+    path: /api/gateway/swagger-ui.html
